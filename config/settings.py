@@ -13,7 +13,6 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 
-load_dotenv(override=True)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -81,11 +80,11 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        # 'NAME': 'mailing',
-        # 'USER': 'postgres',
-        # 'PASSWORD': '32itinizi23iziniti32',
-        # 'HOST': '127.0.0.1',
-        # 'PORT': '5432',
+        'NAME': 'mailing',
+        'USER': 'postgres',
+        'PASSWORD': '32itinizi23iziniti32',
+        'HOST': '127.0.0.1',
+        'PORT': '5432',
     }
 }
 
@@ -112,7 +111,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ru-ru'
 
 TIME_ZONE = 'UTC'
 
