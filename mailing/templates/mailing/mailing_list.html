@@ -1,0 +1,37 @@
+{% extends 'mailing/base.html'%}
+{% load static %}
+{% block content %}
+
+<div class="container col-10">
+    <div class="card">
+        <div class="card-header text-center">
+            <h1>Рассылки</h1>
+        </div>
+        <a class="btn btn-outline-info" href="{% url 'mailing:mailing_create'%}" role="button">Добавить
+                рассылку</a>
+    </div>
+    <div class="card-body">
+        {% for object in object_list %}
+        <div class="col">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <p class="card-text">Тема: {{ object.title }}</p>
+                    <p class="card-text">Текст: {{ object.description }}</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="btn-group">
+                            <a role="button" class="btn btn-sm btn-outline-success"
+                               href="{% url 'mailing:mailing_detail' object.pk %}">Подробнее</a>
+                            <a role="button" class="btn btn-sm btn-outline-secondary" href="{% url 'mailing:mailing_update' object.pk %}">Редактирование</a>
+                            <a role="button" class="btn btn-sm btn-outline-danger"
+                               href="{% url 'mailing:mailing_delete' object.pk %}">Удалить</a>
+                        </div>
+                        <small class="text-body-secondary">создано: {{ object.created_at }}</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+</div>
+{% endblock %}
