@@ -1,0 +1,31 @@
+{% extends 'mailing/base.html' %}
+
+{% block content %}
+<div class="container col-10">
+    <div class="modal modal-sheet position-static d-block bg-body-secondary p-0 py-md-6" tabindex="-1" role="dialog"
+         id="modalChoice">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content rounded-3 shadow">
+                <div class="modal-header p-2 text-center">
+                    <h4>
+                        Детали клиента
+                    </h4>
+                </div>
+                <div class="modal-body p-2">
+                    <h5>Имя: {{ object.name }}</h5>
+                    <p>Email: {{ object.email }}</p>
+                    <p>Комментарий: {{ object.comment }}</p>
+                    <p>Название рассылки: {{ object.mailing.title }}</p>
+                    <p>Описание рассылки: {{ object.mailing.description }}</p>
+                </div>
+                <div class="modal-footer p-2">
+                    <div class="btn-group">
+                        <a href="{% url 'mailing:client_list' %}" class="btn btn-outline-info">Назад</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

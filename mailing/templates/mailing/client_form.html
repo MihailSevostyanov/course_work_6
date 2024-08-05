@@ -10,9 +10,9 @@
                     <div class="modal-header p-2 text-center">
                         <h4>
                             {% if object %}
-                            <strong>Редактирование рассылки</strong>
+                            <strong>Редактирование клиента</strong>
                             {% else %}
-                            <strong>Создание рассылки</strong>
+                            <strong>Создание клиента</strong>
                             {% endif %}
                         </h4>
                     </div>
@@ -32,7 +32,7 @@
                             </strong>
                         </button>
                         <div class="btn-group">
-                            <a href="{% url 'mailing:mailing_list' %}" class="btn btn-outline-info">Назад</a>
+                            <a href="{% url 'mailing:client_list' %}" class="btn btn-outline-info">Назад</a>
                         </div>
                     </div>
                 </div>
