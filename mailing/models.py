@@ -36,3 +36,17 @@ class Mailing(models.Model):
         verbose_name = "Рассылка"
         verbose_name_plural = "Рассылки"
         ordering = ("created_at",)
+
+class Client(models.Model):
+    name = models.CharField(max_length=150, verbose_name='Имя клиента', help_text='Введите имя клиента')
+    email = models.EmailField(verbose_name='Email клиента', help_text='Введите email клиента')
+    comment = models.TextField(verbose_name='Комментарий', help_text='Введите комментарий')
+    is_active = models.BooleanField(default=True, verbose_name='активен')
+    mailing = models.ForeignKey(Mailing, on_delete=models.CASCADE, verbose_name='рассылка', **NULLABLE, related_name='mailing')
+
+    def __str__(self):
+        return f"{self.name} {self.email}"
+
+    class Meta:
+        verbose_name = "Клиент"
+        verbose_name_plural = "Клиенты"
