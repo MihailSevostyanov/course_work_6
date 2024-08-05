@@ -1,7 +1,10 @@
+from django.db.models import Count
+from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
 
-from mailing.models import Mailing
+from mailing.forms import MailingForm, ClientForm, MessageForm
+from mailing.models import Mailing, Client, Message, MailingSettings
 
 
 class HomePageView(TemplateView):
@@ -11,6 +14,9 @@ class HomePageView(TemplateView):
         context_data = super().get_context_data(**kwargs)
         context_data["title"] = "Главная страница"
         return context_data
+
+
+"""Контроллеры рассылки"""
 
 
 class MailingListView(ListView):
@@ -33,7 +39,7 @@ class MailingDetailView(DetailView):
 
 class MailingCreateView(CreateView):
     model = Mailing
-    fields = ['title', 'description']
+    form_class = MailingForm
     success_url = reverse_lazy("mailing:mailing_list")
 
     def get_context_data(self, **kwargs):
@@ -43,7 +49,7 @@ class MailingCreateView(CreateView):
 
 class MailingUpdateView(UpdateView):
     model = Mailing
-    fields = ['title', 'description']
+    form_class = MailingForm
     success_url = reverse_lazy("mailing:mailing_list")
 
     def get_context_data(self, **kwargs):
@@ -56,3 +62,159 @@ class MailingDeleteView(DeleteView):
     success_url = reverse_lazy("mailing:mailing_list")
 
 
+"""Контроллеры клиентов"""
+
+
+class ClientListView(ListView):
+    model = Client
+
+    def get_context_data(self, **kwargs):
+        context_data = super().get_context_data(**kwargs)
+        list_clients = Client.objects.all()
+        context_data['list_clients'] = list_clients
+        return context_data
+
+
+class ClientDetailView(DetailView):
+    model = Client
+
+    def get_context_data(self, **kwargs):
+        context_data = super().get_context_data(**kwargs)
+        return context_data
+
+
+class ClientCreateView(CreateView):
+    model = Client
+    form_class = ClientForm
+    success_url = reverse_lazy("mailing:client_list")
+
+
+class ClientUpdateView(UpdateView):
+    model = Client
+    form_class = ClientForm
+    success_url = reverse_lazy("mailing:client_list")
+
+
+class ClientDeleteView(DeleteView):
+    model = Client
+    success_url = reverse_lazy("mailing:client_list")
+
+
+"""Контроллеры сообщений"""
+
+
+class MessageListView(ListView):
+    model = Message
+
+    def get_context_data(self, **kwargs):
+        context_data = super().get_context_data(**kwargs)
+        list_messages = Message.objects.all()
+        context_data['list_messages'] = list_messages
+        return context_data
+
+
+class MessageDetailView(DetailView):
+    model = Message
+
+    def get_context_data(self, **kwargs):
+        context_data = super().get_context_data(**kwargs)
+        return context_data
+
+
+class MessageCreateView(CreateView):
+    model = Message
+    form_class = MessageForm
+    success_url = reverse_lazy("mailing:message_list")
+
+    def get_context_data(self, **kwargs):
+        context_data = super().get_context_data(**kwargs)
+        return context_data
+
+
+class MessageUpdateView(UpdateView):
+    model = Message
+    form_class = MessageForm
+    success_url = reverse_lazy("mailing:message_list")
+
+
+class MessageDeleteView(DeleteView):
+    model = Message
+    success_url = reverse_lazy("mailing:message_list")
+
+
+"""Контроллеры ностроек рассылки"""
+
+
+class MailingSettingsListView(ListView):
+    model = MailingSettings
+
+    def get_context_data(self, **kwargs):
+        context_data = super().get_context_data(**kwargs)
+        list_settings = MailingSettings.objects.filter(mailing=kwargs['pk'])
+        context_data['list_settings'] = list_settings
+        return context_data
+
+
+class MailingSettingsDetailView(DetailView):
+    model = MailingSettings
+
+    def get_context_data(self, **kwargs):
+        context_data = super().get_context_data(**kwargs)
+        return context_data
+
+
+class MailingSettingsCreateView(CreateView):
+    model = MailingSettings
+    fields = ['key', 'value']
+    success_url = reverse_lazy("mailing:settings_list")
+
+
+class MailingSettingsUpdateView(UpdateView):
+    model = MailingSettings
+    fields = ['key', 'value']
+    success_url = reverse_lazy("mailing:settings_list")
+
+
+class MailingSettingsDeleteView(DeleteView):
+    model = MailingSettings
+    success_url = reverse_lazy("mailing:settings_list")
+
+class HomePageView(TemplateView):
+    template_name = "mailing/home_page.html"
+
+    def get_context_data(self, **kwargs):
+        """
+        - количество рассылок всего,
+        - количество активных рассылок,
+        - количество уникальных клиентов для рассылок,
+        - три случайные статьи из блога.
+
+        :param kwargs:
+        :return:
+        """
+        context = super().get_context_data(**kwargs)
+        # количество рассылок всего
+        context["mailings_count"] = len(Mailing.objects.all())
+        # количество активных рассылок
+        context["mailings_count_active"] = len(Mailing.objects.filter(settings__status=True))
+
+        # количество уникальных клиентов для рассылок
+        emails_unique = Client.objects.values('email').annotate(total=Count('id'))
+        context["emails_unique"] = emails_unique
+        context["emails_unique_count"] = len(emails_unique)
+        # # три случайные статьи из блога
+        # article_list_len = len(Article.objects.all())
+        #
+        # # article_list_len_2 = Article.objects.Count()
+        #
+        # context["article_list_len"] = article_list_len
+        #
+        # valid_profiles_id_list = Article.objects.values_list('id', flat=True)
+        # random_profiles_id_list = random.sample(list(valid_profiles_id_list), min(len(valid_profiles_id_list), 3))
+        # # context["random_articles"] = Article.objects.filter(id__in=random_profiles_id_list)
+        # # = get_cached_article_list()
+        # context["random_articles"] = get_cached_article_list().filter(id__in=random_profiles_id_list)
+        #
+        # # def sample(self, population, k, *, counts=None):
+
+        return context
