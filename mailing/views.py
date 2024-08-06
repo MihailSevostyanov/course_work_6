@@ -1,10 +1,11 @@
 from django.db.models import Count
-from django.shortcuts import get_object_or_404
-from django.urls import reverse_lazy
+from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse_lazy, reverse
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
 
-from mailing.forms import MailingForm, ClientForm, MessageForm
+from mailing.forms import MailingForm, ClientForm, MessageForm, MailingSettingsForm
 from mailing.models import Mailing, Client, Message, MailingSettings
+from mailing.utils.utils import get_info_and_send, select_mailings
 
 
 class HomePageView(TemplateView):
@@ -113,14 +114,6 @@ class MessageListView(ListView):
         return context_data
 
 
-class MessageDetailView(DetailView):
-    model = Message
-
-    def get_context_data(self, **kwargs):
-        context_data = super().get_context_data(**kwargs)
-        return context_data
-
-
 class MessageCreateView(CreateView):
     model = Message
     form_class = MessageForm
@@ -150,34 +143,65 @@ class MailingSettingsListView(ListView):
 
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
-        list_settings = MailingSettings.objects.filter(mailing=kwargs['pk'])
+        list_settings = MailingSettings.objects.all()
         context_data['list_settings'] = list_settings
         return context_data
 
 
-class MailingSettingsDetailView(DetailView):
+class MailingSettingsCreateView(DetailView):
     model = MailingSettings
+    form_class = MailingSettingsForm
 
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
         return context_data
 
 
-class MailingSettingsCreateView(CreateView):
-    model = MailingSettings
-    fields = ['key', 'value']
-    success_url = reverse_lazy("mailing:settings_list")
-
-
 class MailingSettingsUpdateView(UpdateView):
     model = MailingSettings
-    fields = ['key', 'value']
+    form_class = MailingSettingsForm
     success_url = reverse_lazy("mailing:settings_list")
 
 
 class MailingSettingsDeleteView(DeleteView):
     model = MailingSettings
     success_url = reverse_lazy("mailing:settings_list")
+
+
+def mailing_send(request, pk):
+    mailing_item = get_object_or_404(Mailing, pk=pk)
+
+    print(f"mailing_send {mailing_item}")
+
+    try:
+        # sending(mailing_item)
+        get_info_and_send(mailing_item)
+    except Exception as e:
+        print("Ошибка")
+        print(e)
+    else:
+        mailing_item.status = True
+        mailing_item.save()
+
+    print(mailing_item)
+    # print(mailing_item.status)
+
+    select_mailings()
+
+    return redirect(reverse('mailing:mailing_list'))
+
+
+def toggle_activity_mailing(request, pk):
+    mailing_item = get_object_or_404(Mailing, pk=pk)
+    if mailing_item.settings.status:
+        mailing_item.settings.status = False
+    else:
+        mailing_item.settings.status = True
+
+    mailing_item.settings.save()
+
+    return redirect(reverse('mailing:mailing_list'))
+
 
 class HomePageView(TemplateView):
     template_name = "mailing/home_page.html"

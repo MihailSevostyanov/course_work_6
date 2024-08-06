@@ -4,33 +4,68 @@
 
 <div class="container col-10">
     <div class="card">
-        <div class="card-header text-center">
-            <h1>Рассылки</h1>
+        <div class="card-header text-center" style="color: orange">
+            <h1><b>Рассылки</b></h1>
         </div>
-        <a class="btn btn-outline-info" href="{% url 'mailing:mailing_create'%}" role="button">Добавить
-                рассылку</a>
+        <div class="button-group">
+        <a class="btn btn-outline-success" href="{% url 'mailing:mailing_create'%}" role="button">Добавить
+            рассылку</a>
+        <a class="btn btn-outline-info" href="{% url 'mailing:settings_list'%}" role="button">Список
+            настроек</a>
+        <a class="btn btn-outline-info" href="{% url 'mailing:message_list'%}" role="button">Список
+            писем</a>
+        </div>
     </div>
     <div class="card-body">
-        {% for object in object_list %}
-        <div class="col">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <p class="card-text">Тема: {{ object.title }}</p>
-                    <p class="card-text">Текст: {{ object.description }}</p>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="btn-group">
-                            <a role="button" class="btn btn-sm btn-outline-success"
-                               href="{% url 'mailing:mailing_detail' object.pk %}">Подробнее</a>
-                            <a role="button" class="btn btn-sm btn-outline-secondary" href="{% url 'mailing:mailing_update' object.pk %}">Редактирование</a>
-                            <a role="button" class="btn btn-sm btn-outline-danger"
-                               href="{% url 'mailing:mailing_delete' object.pk %}">Удалить</a>
-                        </div>
-                        <small class="text-body-secondary">создано: {{ object.created_at }}</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-        {% endfor %}
+        <h5 class="card-title">
+
+            <div style="color: orange"><b> Рассылки: &nbsp; режим владельца</b></div>
+
+        </h5>
+        <p class="card-text">
+        <table class="table table-stripped">
+            <tr>
+                <th>Название</th>
+                <th>Текст рассылки</th>
+                <th>Дата создания</th>
+                <th>Владелец рассылки</th>
+                <th>Статус</th>
+                <th>Информация</th>
+                <th>Изменить</th>
+                <th>Удалить</th>
+                <th>Отправить</th>
+
+            </tr>
+            {% for object in object_list %}
+            <tr>
+                <td>{{object.title}}</td>
+                <td>{{object.message.body}}</td>
+                <td>{{object.created_at}}</td>
+                <td>{{object.user}}</td>
+                <td>{{object.settings.status}}</td>
+
+                <td>
+                    <a class="btn btn-outline-primary" href="{%url 'mailing:mailing_detail' object.pk%}"
+                       role="button">Информация</a>
+                </td>
+                <td>
+                    <a class="btn btn-outline-primary" href="{%url 'mailing:mailing_update' object.pk%}"
+                       role="button">Изменить</a>
+                </td>
+                <td>
+                    <a class="btn btn-outline-primary" href="{%url 'mailing:mailing_delete' object.pk%}"
+                       role="button">Удалить</a>
+                </td>
+                <td>
+                    <a class="btn btn-outline-danger" href="{%url 'mailing:mailing_send' object.pk%}"
+                       role="button">Отправить</a>
+                </td>
+
+            </tr>
+
+            {% endfor %}
+        </table>
+        </p>
     </div>
 </div>
 </div>

@@ -141,3 +141,8 @@ EMAIL_USE_SSL = os.getenv('EMAIL_USE_SSL', False) == 'True'
 
 SERVER_EMAIL = EMAIL_HOST_USER
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+CRONJOBS = [
+    ('*/5 * * * *', 'mailing.utils.utils.select_mailings'),
+]
+DATE_INPUT_FORMATS = ('%d/%m/%Y')

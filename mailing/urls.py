@@ -3,8 +3,8 @@ from mailing.apps import MailingConfig
 from mailing.views import MailingListView, MailingDetailView, MailingCreateView, MailingUpdateView, MailingDeleteView, \
     HomePageView, ClientListView, ClientCreateView, ClientDetailView, ClientUpdateView, ClientDeleteView, \
     MessageListView, MessageCreateView, MessageUpdateView, MessageDeleteView, MailingSettingsListView, \
-    MailingSettingsCreateView, MailingSettingsUpdateView, MailingSettingsDeleteView, MailingSettingsDetailView, \
-    MessageDetailView
+    MailingSettingsUpdateView, MailingSettingsDeleteView, MailingSettingsCreateView, mailing_send, \
+    toggle_activity_mailing
 
 app_name = MailingConfig.name
 
@@ -16,15 +16,16 @@ urlpatterns = [
     path('mailing/update/<int:pk>', MailingUpdateView.as_view(), name='mailing_update'),
     path('mailing/delete/<int:pk>', MailingDeleteView.as_view(), name='mailing_delete'),
 
+    path('mailing_send/<int:pk>/', mailing_send, name='mailing_send'),
+    path('mailing_activity/<int:pk>/', toggle_activity_mailing, name='mailing_activity'),
+
     path('mailing/message/', MessageListView.as_view(), name='message_list'),
     path('mailing/message/create/', MessageCreateView.as_view(), name='message_create'),
-    path('mailing/message/detail/<int:pk>', MessageDetailView.as_view(), name='message_detail'),
     path('mailing/message/update/<int:pk>', MessageUpdateView.as_view(), name='message_update'),
     path('mailing/message/delete/<int:pk>', MessageDeleteView.as_view(), name='message_delete'),
 
     path('mailing/settings/', MailingSettingsListView.as_view(), name='settings_list'),
     path('mailing/settings/create/', MailingSettingsCreateView.as_view(), name='settings_create'),
-    path('mailing/settings/detail/<int:pk>', MailingSettingsDetailView.as_view(), name='settings_detail'),
     path('mailing/settings/update/<int:pk>', MailingSettingsUpdateView.as_view(), name='settings_update'),
     path('mailing/settings/delete/<int:pk>', MailingSettingsDeleteView.as_view(), name='settings_delete'),
 

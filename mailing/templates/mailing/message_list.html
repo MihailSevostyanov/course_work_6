@@ -4,39 +4,42 @@
 
 <div class="container col-10">
     <div class="card">
-        <div class="card-header text-center">
-            <h1>Шаблоны писем</h1>
+        <div class="card-header text-center" style="color: orange">
+            <h1><b>Письма</b></h1>
         </div>
-        <a class="btn btn-outline-info" href="{% url 'mailing:message_create'%}" role="button">Добавить письмо</a>
-    </div>
-    <div class="card-body">
-        {% for object in object_list %}
-        <div class="col">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <p class="card-text">Тема письма: {{ object.title }}</p>
-                    <p class="card-text">Текст письма: {{ object.body }}</p>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="btn-group">
-                            <a role="button" class="btn btn-sm btn-outline-success"
-                               href="{% url 'mailing:message_detail' object.pk %}">Подробнее</a>
-                            <a role="button" class="btn btn-sm btn-outline-secondary" href="{% url 'mailing:message_update' object.pk %}">Редактирование</a>
-                            <a role="button" class="btn btn-sm btn-outline-danger"
-                               href="{% url 'mailing:message_delete' object.pk %}">Удалить</a>
-                        </div>
-                        <small class="text-body-secondary">активен:
-                            {% if object.is_active == True %}
-                            Да
-                            {% else %}
-                            Нет
-                            {% endif %}
-                        </small>
+                    <div class="button-group">
+                        <a class="btn btn-outline-success" href="{% url 'mailing:message_create'%}" role="button">Добавить
+                            письмо</a>
+                        <a href="{% url 'mailing:mailing_list' %}" class="btn btn-outline-info me-md-2">Назад</a>
                     </div>
-                </div>
+                </h5>
+                <p class="card-text">
+                <table class="table table-stripped">
+                    <tr>
+                        <th>Тема письма</th>
+                        <th>Текст письма</th>
+                        <th>Изменить</th>
+                        <th>Удалить</th>
+                    </tr>
+                    {% for object in object_list %}
+                    <tr>
+                        <td>{{object.title}}</td>
+                        <td>{{object.body}}</td>
+                        <td>
+                            <a class="btn btn-outline-primary"
+                               href="{% url 'mailing:message_update' object.pk %}"
+                               role="button">Изменить</a>
+                        </td>
+                        <td>
+                            <a class="btn btn-outline-danger"
+                               href="{%url 'mailing:message_delete' object.pk%}" role="button">Удалить</a>
+                        </td>
+                    </tr>
+                    {%endfor%}
+                </table>
+                </p>
             </div>
         </div>
-        {% endfor %}
     </div>
-</div>
 </div>
 {% endblock %}
