@@ -41,6 +41,7 @@ INSTALLED_APPS = [
 
     'mailing',
     'django_crontab',
+    'users'
 ]
 
 MIDDLEWARE = [
@@ -146,3 +147,8 @@ CRONJOBS = [
     ('*/5 * * * *', 'mailing.utils.utils.select_mailings'),
 ]
 DATE_INPUT_FORMATS = ('%d/%m/%Y')
+
+AUTH_USER_MODEL = 'users.User'
+
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'

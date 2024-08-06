@@ -1,5 +1,7 @@
 from django.db import models
 
+from users.models import User
+
 NULLABLE = {'blank': True, 'null': True}
 
 
@@ -35,13 +37,13 @@ class MailingSettings(models.Model):
         (CREATED, "Создана"),
         (STARTED, "Запущена"),
     ]
-    start_time = models.DateTimeField(verbose_name='время начала рассылки', **NULLABLE)
-    end_time = models.DateTimeField(verbose_name='время окончания рассылки', **NULLABLE)
-    datetime_send = models.DateTimeField(auto_now_add=True, verbose_name='дата и время первой отправки рассылки',
-                                         help_text='введите дату и время первой отправки рассылки')
+    start_time = models.DateTimeField(verbose_name='Время начала рассылки', **NULLABLE)
+    end_time = models.DateTimeField(verbose_name='Время окончания рассылки', **NULLABLE)
+    datetime_send = models.DateTimeField(auto_now_add=True, verbose_name='Дата и время первой отправки рассылки',
+                                         help_text='Введите дату и время первой отправки рассылки')
     periodicity = models.CharField(max_length=50, choices=PERIODICITY_CHOICES, verbose_name='Периодичность')
     status = models.CharField(max_length=50, choices=STATUS_CHOICES, verbose_name='Статус')
-    active = models.BooleanField(default=True, verbose_name='активность', help_text='запущена ли рассылка сейчас')
+    active = models.BooleanField(default=True, verbose_name='Активность', help_text='Запущена ли рассылка сейчас')
 
     def __str__(self):
         return f"Натройки рассылки - time:{self.start_time} - {self.end_time}, periodicity: {self.periodicity}, status: {self.status}"
@@ -58,10 +60,13 @@ class Mailing(models.Model):
     description = models.TextField(verbose_name='Описание', help_text='Введите описание рассылки', **NULLABLE)
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания',
                                       help_text='Введите дату создания статьи')
-    message = models.OneToOneField(Message, on_delete=models.CASCADE, verbose_name='сообщение', **NULLABLE,
+    message = models.OneToOneField(Message, on_delete=models.CASCADE, verbose_name='Сообщение', **NULLABLE,
                                    related_name='message')
-    settings = models.OneToOneField(MailingSettings, on_delete=models.CASCADE, verbose_name='настройки', **NULLABLE,
+    settings = models.OneToOneField(MailingSettings, on_delete=models.CASCADE, verbose_name='Настройки', **NULLABLE,
                                     related_name='settings')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Пользователь',
+                             help_text='Введите имя пользователя', **NULLABLE)
+
 
     def __str__(self):
         return f"{self.title} {self.description}"
