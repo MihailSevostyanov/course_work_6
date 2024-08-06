@@ -1,60 +1,37 @@
-import smtplib
-from datetime import datetime
+from smtplib import SMTPException
 
 from django.core.mail import send_mail
+from django.utils import timezone
 
 from config import settings
-from mailing.models import MailingSettings, Log
+from mailing.models import Mailing, Client, Log
 
 
-def send_email(message_settings, message_client):
-    try:
-        send_mail(
-            subject=message_settings.title,
-            message=message_settings.text,
-            from_email=settings.EMAIL_HOST_USER,
-            recipient_list=[message_client.email],
-            fail_silently=False,
-        )
+def sending(mailing_item: Mailing):
+    """
+    Отправка письма
+    """
+    print(f"mailing_item={mailing_item}...")
 
-        Log.objects.create(
-            time=datetime.datetime.now(datetime.timezone.utc),
-            status="Успешно",
-            mailing_list=message_settings,
-            client=message_client,
-        )
-    except smtplib.SMTPException as e:
-        Log.objects.create(
-            time=datetime.datetime.now(datetime.timezone.utc),
-            status="Ошибка",
-            server_response=str(e),
-            mailing_list=message_settings,
-            client=message_client,
-        )
+    mail_list = Client.objects.filter(mailing=mailing_item)
 
-def send_mails():
-    datetime_now = datetime.datetime.now(datetime.timezone.utc)
-    for mailing_setting in MailingSettings.objects.filter(status=MailingSettings.STARTED):
+    for mail in mail_list:
+        try:
+            print(f"subject={mail.name}, message={mailing_item.message}, from_email={settings.EMAIL_HOST_USER}, "
+                  f"to_email={mail.email}")
 
-        if (datetime_now > mailing_setting.start_time) and (datetime_now < mailing_setting.end_time):
+            result = send_mail(
+                subject=mail.name,
+                message=mailing_item.message,
+                from_email=settings.EMAIL_HOST_USER,
+                recipient_list=[mail.email],
+                fail_silently=False,
+            )
 
-            for mailing_client in mailing_setting.client.all():
-                mailing_log = Log.objects.filter(
-                    client=mailing_client.pk,
-                    mailing_list=mailing_setting
-                )
+            log_text = f'Send mail {result}, time={timezone.now()}, mailing={mailing_item.title}, mail={mail.email}'
+            log = Log.objects.create(log_text=log_text, mailing=mailing_item)
+            log.save()
 
-                if mailing_log.exists():
-                    last_try_date = mailing_log.order_by('-time').first().time
-
-                    if mailing_setting.periodicity == MailingSettings.DAILY:
-                        if (datetime_now - last_try_date).days >= 1:
-                            send_email(mailing_setting, mailing_client)
-                    elif mailing_setting.periodicity == MailingSettings.WEEKLY:
-                        if (datetime_now - last_try_date).days >= 7:
-                            send_email(mailing_setting, mailing_client)
-                    elif mailing_setting.periodicity == MailingSettings.MONTHLY:
-                        if (datetime_now - last_try_date).days >= 30:
-                            send_email(mailing_setting, mailing_client)
-                else:
-                    send_email(mailing_setting, mailing_client)
+        except SMTPException as error:
+            log_text = f'Send mail: error={error}, time={timezone.now()}, mailing={mailing_item.title}, mail={mail.email}'
+            log = Log.objects.create(log_text=log_text, mailing=mailing_item)

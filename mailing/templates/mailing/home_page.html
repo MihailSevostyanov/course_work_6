@@ -1,7 +1,7 @@
 {% extends 'mailing/base.html' %}
 {% block content %}
-<div class="pricing-header px-3 py-3 pt-md-1 pb-md-1 mx-auto text-center">
-    <h6 class="display-3">Сервис рассылки писем</h6>
+<div class="pricing-header px-3 py-3 pt-md-1 pb-md-1 mx-auto text-center" style="color: green">
+    <h6 class="display-3"><b>Сервис рассылки писем</b></h6>
 </div>
 <div class="container col-10">
     <div class="card-body">
@@ -23,9 +23,8 @@
                 </tbody>
             </table>
             <div class="btn-group">
-                <a href="{% url 'mailing:client_list' %}" class="btn btn-outline-info">Список клиентов</a>
-                <a href="{% url 'mailing:mailing_list' %}" class="btn btn-outline-info">Список рассылок</a>
-                <a href="{% url 'mailing:message_list' %}" class="btn btn-outline-info">Список писем</a>
+                <a href="{% url 'mailing:client_list' %}" class="btn btn-outline-info">Клиенты</a>
+                <a href="{% url 'mailing:mailing_list' %}" class="btn btn-outline-info">Рассылки</a>
             </div>
         </div>
     </div>

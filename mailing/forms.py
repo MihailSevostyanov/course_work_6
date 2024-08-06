@@ -1,6 +1,6 @@
-from django.forms import forms, ModelForm, BooleanField
+from django.forms import forms, ModelForm, BooleanField, DateField, DateInput
 
-from mailing.models import Client, Mailing, Message
+from mailing.models import Client, Mailing, Message, MailingSettings
 
 
 class StyleFormMixin(forms.Form):
@@ -51,7 +51,18 @@ class MailingForm(StyleFormMixin, ModelForm):
                 raise forms.ValidationError(f'Описание не должно содержать слово {word}')
         return cleaned_data
 
+
 class MessageForm(StyleFormMixin, ModelForm):
     class Meta:
         model = Message
         fields = ('title', 'body')
+
+
+class MailingSettingsForm(StyleFormMixin, ModelForm):
+    class Meta:
+        model = MailingSettings
+        fields = ('start_time', 'end_time', 'periodicity', 'status', 'active')
+        created_date = DateField(input_formats=['%d/%m/%Y', ],
+                                       widget=DateInput(
+                                           attrs={'class': 'datepicker form-control', 'placeholder': 'Select a date'}),
+                                       required=False)

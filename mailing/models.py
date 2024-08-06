@@ -44,7 +44,7 @@ class MailingSettings(models.Model):
     active = models.BooleanField(default=True, verbose_name='активность', help_text='запущена ли рассылка сейчас')
 
     def __str__(self):
-        return f"{self.title} time:{self.start_time} - {self.end_time}, periodicity: {self.periodicity}, status: {self.status}"
+        return f"Натройки рассылки - time:{self.start_time} - {self.end_time}, periodicity: {self.periodicity}, status: {self.status}"
 
     class Meta:
         verbose_name = "Настройки рассылки"
