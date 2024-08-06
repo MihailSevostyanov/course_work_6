@@ -17,7 +17,7 @@ class ClientAdmin(admin.ModelAdmin):
 
 @admin.register(MailingSettings)
 class MailSettingAdmin(admin.ModelAdmin):
-    list_display = ('id', 'datetime_send', 'periodicity', 'status', 'active')
+    list_display = ('id', 'datetime_send', 'periodicity', 'status', 'active', 'status_changed')
 
 
 @admin.register(Message)

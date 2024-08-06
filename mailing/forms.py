@@ -16,7 +16,7 @@ class StyleFormMixin(forms.Form):
 class ClientForm(StyleFormMixin, ModelForm):
     class Meta:
         model = Client
-        fields = ('name', 'email', 'comment', 'is_active', 'mailing')
+        fields = ('name', 'email', 'comment', 'is_active')
 
     def clean_name(self):
         cleaned_data = self.cleaned_data['name']
@@ -31,7 +31,7 @@ class ClientForm(StyleFormMixin, ModelForm):
 class MailingForm(StyleFormMixin, ModelForm):
     class Meta:
         model = Mailing
-        fields = ('title', 'description', 'message')
+        fields = ('title', 'description', 'message', 'user', 'settings')
 
     def clean_title(self):
         cleaned_data = self.cleaned_data['title']
@@ -61,7 +61,7 @@ class MessageForm(StyleFormMixin, ModelForm):
 class MailingSettingsForm(StyleFormMixin, ModelForm):
     class Meta:
         model = MailingSettings
-        fields = ('start_time', 'end_time', 'periodicity', 'status', 'active')
+        fields = ('start_time', 'end_time', 'periodicity', 'status', 'active', 'status_changed')
         created_date = DateField(input_formats=['%d/%m/%Y', ],
                                        widget=DateInput(
                                            attrs={'class': 'datepicker form-control', 'placeholder': 'Select a date'}),

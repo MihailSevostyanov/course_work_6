@@ -44,9 +44,10 @@ class MailingSettings(models.Model):
     periodicity = models.CharField(max_length=50, choices=PERIODICITY_CHOICES, verbose_name='Периодичность')
     status = models.CharField(max_length=50, choices=STATUS_CHOICES, verbose_name='Статус')
     active = models.BooleanField(default=True, verbose_name='Активность', help_text='Запущена ли рассылка сейчас')
+    status_changed = models.BooleanField(default=True, verbose_name='Выбранный статус', help_text='Введите статус рассылки (ожидается (запущена или завершена))')
 
     def __str__(self):
-        return f"Натройки рассылки - time:{self.start_time} - {self.end_time}, periodicity: {self.periodicity}, status: {self.status}"
+        return f"Натройки рассылки - time:{self.start_time} - {self.end_time}, periodicity: {self.periodicity}, status: {self.status_changed}"
 
     class Meta:
         verbose_name = "Настройки рассылки"

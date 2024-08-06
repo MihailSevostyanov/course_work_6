@@ -8,21 +8,23 @@
             <h1><b>Рассылки</b></h1>
         </div>
         <div class="button-group">
-        <a class="btn btn-outline-success" href="{% url 'mailing:mailing_create'%}" role="button">Добавить
-            рассылку</a>
-        <a class="btn btn-outline-info" href="{% url 'mailing:settings_list'%}" role="button">Список
-            настроек</a>
-        <a class="btn btn-outline-info" href="{% url 'mailing:message_list'%}" role="button">Список
-            писем</a>
+            <a class="btn btn-outline-success" href="{% url 'mailing:mailing_create'%}" role="button">Добавить
+                рассылку</a>
+            <a class="btn btn-outline-info" href="{% url 'mailing:settings_list'%}" role="button">Список
+                настроек</a>
+            <a class="btn btn-outline-info" href="{% url 'mailing:message_list'%}" role="button">Список
+                писем</a>
+            <a class="btn btn-outline-info" href="{% url 'mailing:client_list'%}" role="button">Список клиентов</a>
         </div>
     </div>
     <div class="card-body">
         <h5 class="card-title">
 
-            <div style="color: orange"><b> Рассылки: &nbsp; режим владельца</b></div>
+            <div style="color: red"><b>Рассылки: &nbsp; режим модератора </b></div>
 
         </h5>
         <p class="card-text">
+
         <table class="table table-stripped">
             <tr>
                 <th>Название</th>
@@ -32,41 +34,99 @@
                 <th>Статус</th>
                 <th>Информация</th>
                 <th>Изменить</th>
-                <th>Удалить</th>
-                <th>Отправить</th>
 
             </tr>
+            {% if user.is_authenticated %}
             {% for object in object_list %}
             <tr>
                 <td>{{object.title}}</td>
                 <td>{{object.message.body}}</td>
                 <td>{{object.created_at}}</td>
                 <td>{{object.user}}</td>
-                <td>{{object.settings.status}}</td>
+                <td>{% if object.settings.status_changed %}
+                    Включена
+                    {% else %}
+                    Отключена
+                    {% endif %}
+                </td>
 
                 <td>
-                    <a class="btn btn-outline-primary" href="{%url 'mailing:mailing_detail' object.pk%}"
-                       role="button">Информация</a>
+                    <a class="btn btn-primary" href="{%url 'mailing:mailing_detail' object.pk%}" role="button">Информация</a>
                 </td>
                 <td>
-                    <a class="btn btn-outline-primary" href="{%url 'mailing:mailing_update' object.pk%}"
-                       role="button">Изменить</a>
+                    {%if object.settings.status_changed %}
+                    <a class="btn btn-danger" href="{%url 'mailing:mailing_activity' object.pk%}"
+                       role="button">Деактивировать</a>
+                    {% else %}
+                    <a class="btn btn-success" href="{%url 'mailing:mailing_activity' object.pk%}"
+                       role="button">&nbsp;&nbsp;Активировать&nbsp;&nbsp;</a>
+                    {%endif%}
                 </td>
-                <td>
-                    <a class="btn btn-outline-primary" href="{%url 'mailing:mailing_delete' object.pk%}"
-                       role="button">Удалить</a>
-                </td>
-                <td>
-                    <a class="btn btn-outline-danger" href="{%url 'mailing:mailing_send' object.pk%}"
-                       role="button">Отправить</a>
-                </td>
+
 
             </tr>
-
             {% endfor %}
+            {% endif %}
+
         </table>
-        </p>
+
+
+        <div class="card-body">
+            <h5 class="card-title">
+
+                <div style="color: orange"><b> Рассылки: &nbsp; режим владельца</b></div>
+
+            </h5>
+            <p class="card-text">
+            <table class="table table-stripped">
+                <tr>
+                    <th>Название</th>
+                    <th>Текст рассылки</th>
+                    <th>Дата создания</th>
+                    <th>Владелец рассылки</th>
+                    <th>Статус</th>
+                    <th>Информация</th>
+                    <th>Изменить</th>
+                    <th>Удалить</th>
+                    <th>Отправить</th>
+
+                </tr>
+                {% if user.is_authenticated %}
+                {% for object in object_list %}
+                <tr>
+                    <td>{{object.title}}</td>
+                    <td>{{object.message.body}}</td>
+                    <td>{{object.created_at}}</td>
+                    <td>{{object.user}}</td>
+                    <td>{% if object.settings.status_changed %}
+                        Включена
+                        {% else %}
+                        Отключена
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        <a class="btn btn-outline-primary" href="{%url 'mailing:mailing_detail' object.pk%}"
+                           role="button">Информация</a>
+                    </td>
+                    <td>
+                        <a class="btn btn-outline-primary" href="{%url 'mailing:mailing_update' object.pk%}"
+                           role="button">Изменить</a>
+                    </td>
+                    <td>
+                        <a class="btn btn-outline-primary" href="{%url 'mailing:mailing_delete' object.pk%}"
+                           role="button">Удалить</a>
+                    </td>
+                    <td>
+                        <a class="btn btn-outline-danger" href="{%url 'mailing:mailing_send' object.pk%}"
+                           role="button">Отправить</a>
+                    </td>
+                    {% endfor %}
+                    {% endif %}
+                </tr>
+            </table>
+            </p>
+        </div>
     </div>
-</div>
 </div>
 {% endblock %}

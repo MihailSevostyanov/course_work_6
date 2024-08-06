@@ -50,17 +50,12 @@ def get_info_and_send(mailing_item: Mailing):
 def select_mailings():
     zone = pytz.timezone(settings.TIME_ZONE)
     current_datetime = datetime.now(zone)
-    # создание объекта с применением фильтра
-
-    # mailings = Mailing.objects.all()
 
     setgs = MailingSettings.objects.filter(datetime_send__lte=current_datetime).filter(status=True).filter()
 
-    # mailings = Mailing.objects.filter(setgs in (setgs))
 
     [print(f"settings={setting.__dict__}...") for setting in setgs]
 
-    # дополнение к логике: рассылки неактивных пользователей не запускаются
     mailings2 = Mailing.objects.filter(settings__datetime_send__lte=current_datetime).filter(
         settings__status=True).filter(user__is_active=True)
 
