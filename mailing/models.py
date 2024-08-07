@@ -44,7 +44,8 @@ class MailingSettings(models.Model):
     periodicity = models.CharField(max_length=50, choices=PERIODICITY_CHOICES, verbose_name='Периодичность')
     status = models.CharField(max_length=50, choices=STATUS_CHOICES, verbose_name='Статус')
     active = models.BooleanField(default=True, verbose_name='Активность', help_text='Запущена ли рассылка сейчас')
-    status_changed = models.BooleanField(default=True, verbose_name='Выбранный статус', help_text='Введите статус рассылки (ожидается (запущена или завершена))')
+    status_changed = models.BooleanField(default=True, verbose_name='Выбранный статус',
+                                         help_text='Введите статус рассылки (ожидается (запущена или завершена))')
 
     def __str__(self):
         return f"Натройки рассылки - time:{self.start_time} - {self.end_time}, periodicity: {self.periodicity}, status: {self.status_changed}"
@@ -68,7 +69,6 @@ class Mailing(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Пользователь',
                              help_text='Введите имя пользователя', **NULLABLE)
 
-
     def __str__(self):
         return f"{self.title} {self.description}"
 
@@ -76,6 +76,10 @@ class Mailing(models.Model):
         verbose_name = "Рассылка"
         verbose_name_plural = "Рассылки"
         ordering = ("created_at",)
+        permissions = [
+            ("can_turn_off_mailing", "Can turn off mailing (mailing.settings.status = False"),
+            ("can_not_edit_mailing", "Can not edit mailing")
+        ]
 
 
 class Client(models.Model):
@@ -85,6 +89,7 @@ class Client(models.Model):
     is_active = models.BooleanField(default=True, verbose_name='активен')
     mailing = models.ForeignKey(Mailing, on_delete=models.CASCADE, verbose_name='рассылка', **NULLABLE,
                                 related_name='mailing')
+    user = models.ForeignKey(User, verbose_name='Владелец', on_delete=models.SET_NULL, **NULLABLE)
 
     def __str__(self):
         return f"{self.name} {self.email}"
@@ -99,7 +104,7 @@ class Log(models.Model):
     status = models.CharField(max_length=30, verbose_name='статус попытки')
     server_response = models.CharField(verbose_name='ответ почтового сервера', **NULLABLE)
 
-    mailing_list = models.ForeignKey(MailingSettings, on_delete=models.CASCADE, verbose_name='рассылка')
+    mailing_list = models.ForeignKey(Mailing, on_delete=models.CASCADE, verbose_name='рассылка')
     client = models.ForeignKey(Client, on_delete=models.CASCADE, verbose_name='клиент', **NULLABLE)
 
     def __str__(self):

@@ -1,4 +1,5 @@
 {% extends 'mailing/base.html' %}
+{% load my_tags %}
 {% block content %}
 <div class="pricing-header px-3 py-3 pt-md-1 pb-md-1 mx-auto text-center" style="color: green">
     <h6 class="display-3"><b>Сервис рассылки писем</b></h6>
@@ -22,11 +23,57 @@
                 </tr>
                 </tbody>
             </table>
-            <div class="btn-group">
+            <div class="btn-group mb-3">
+                {% if user.is_authenticated %}
                 <a href="{% url 'mailing:client_list' %}" class="btn btn-outline-info">Клиенты</a>
                 <a href="{% url 'mailing:mailing_list' %}" class="btn btn-outline-info">Рассылки</a>
+                <a href="{% url 'blog:blog_list' %}" class="btn btn-outline-info">Блог</a>
+                {% endif %}
             </div>
         </div>
     </div>
 </div>
+<div class="container">
+    <div class="row text-right">
+        {% for article in random_articles %}
+
+        <div class="col-4">
+
+            <div class="card mb-3 box-shadow">
+                <img src="{{ article.image | media_filter }}" class="card-img-top" alt={{article.image|media_filter}}>
+
+
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <div style="color: orange"><b> {{article.title}}</b></div>
+                    </h5>
+                    <p class="card-text">
+                        {% if article.body|comment_markdown|length >= 300 %}
+                        {{ article.body|comment_markdown|slice:":300"}} ...
+                        {% else %}
+                        {{ article.body}}
+                        {% endif %}
+                    </p>
+                    <br>
+                    <p class="card-text">
+                        <b>Опубликовано</b> {{article.created_at}}<br>
+                        <b>Просмотров</b>{{article.views_count}}<br>
+                    </p>
+
+
+                    <div class="btn-group">
+                        <a class="btn btn-success" href="{% url 'blog:blog_detail' article.pk%}" role="button">Посмотреть</a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
 {% endblock %}

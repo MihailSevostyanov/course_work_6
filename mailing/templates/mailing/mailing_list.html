@@ -8,19 +8,23 @@
             <h1><b>Рассылки</b></h1>
         </div>
         <div class="button-group">
-            <a class="btn btn-outline-success" href="{% url 'mailing:mailing_create'%}" role="button">Добавить
+            <a class="btn btn-outline-success" href="{% url 'mailing:mailing_create'%}" role="button" >Добавить
                 рассылку</a>
             <a class="btn btn-outline-info" href="{% url 'mailing:settings_list'%}" role="button">Список
                 настроек</a>
             <a class="btn btn-outline-info" href="{% url 'mailing:message_list'%}" role="button">Список
                 писем</a>
             <a class="btn btn-outline-info" href="{% url 'mailing:client_list'%}" role="button">Список клиентов</a>
+            <a class="btn btn-outline-info" href="{% url 'mailing:log_list'%}" role="button">Список попыток
+                рассылок</a>
         </div>
     </div>
+
     <div class="card-body">
+        {% if perms.mailing.change_mailing and perms.mailing.view_mailing and perms.mailing.can_turn_off_mailing %}
         <h5 class="card-title">
 
-            <div style="color: red"><b>Рассылки: &nbsp; режим модератора </b></div>
+            <div style="color: red"><b>Рассылки: &nbsp; режим менеджера </b></div>
 
         </h5>
         <p class="card-text">
@@ -36,9 +40,9 @@
                 <th>Изменить</th>
 
             </tr>
-            {% if user.is_authenticated %}
             {% for object in object_list %}
             <tr>
+                {% if perms.mailing.view_mailing %}
                 <td>{{object.title}}</td>
                 <td>{{object.message.body}}</td>
                 <td>{{object.created_at}}</td>
@@ -62,15 +66,12 @@
                        role="button">&nbsp;&nbsp;Активировать&nbsp;&nbsp;</a>
                     {%endif%}
                 </td>
-
+                {% endif %}
 
             </tr>
             {% endfor %}
-            {% endif %}
-
         </table>
-
-
+        {% endif %}
         <div class="card-body">
             <h5 class="card-title">
 
@@ -91,8 +92,8 @@
                     <th>Отправить</th>
 
                 </tr>
-                {% if user.is_authenticated %}
                 {% for object in object_list %}
+                {% if user == object.user or user.is_superuser%}
                 <tr>
                     <td>{{object.title}}</td>
                     <td>{{object.message.body}}</td>
@@ -121,9 +122,9 @@
                         <a class="btn btn-outline-danger" href="{%url 'mailing:mailing_send' object.pk%}"
                            role="button">Отправить</a>
                     </td>
-                    {% endfor %}
-                    {% endif %}
                 </tr>
+                {% endif %}
+                {% endfor %}
             </table>
             </p>
         </div>

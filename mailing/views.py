@@ -1,23 +1,18 @@
+import random
+
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import PermissionDenied
 from django.db.models import Count
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
 
+from blog.models import Blog
+from blog.services import get_cached_blog_list
 from mailing.forms import MailingForm, ClientForm, MessageForm, MailingSettingsForm
-from mailing.models import Mailing, Client, Message, MailingSettings
+from mailing.models import Mailing, Client, Message, MailingSettings, Log
 from mailing.utils.utils import get_info_and_send, select_mailings
-
-
-class HomePageView(TemplateView):
-    template_name = "mailing/home_page.html"
-
-    def get_context_data(self, **kwargs):
-        context_data = super().get_context_data(**kwargs)
-        context_data["title"] = "Главная страница"
-        return context_data
-
 
 """Контроллеры рассылки"""
 
@@ -38,6 +33,13 @@ class MailingDetailView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
         return context_data
+
+    def form_valid(self, form):
+        user = self.request.user
+        if user == self.object.user or user.has_perm("mailing.view_mailing"):
+            return
+        else:
+            raise PermissionDenied
 
 
 class MailingCreateView(LoginRequiredMixin, CreateView):
@@ -73,7 +75,8 @@ class MailingListViewSend(LoginRequiredMixin, ListView):
         context['only_send'] = True
         return context
 
-
+class logListView(ListView):
+    model = Log
 
 
 """Контроллеры клиентов"""
@@ -182,8 +185,6 @@ class MailingSettingsDeleteView(LoginRequiredMixin, DeleteView):
     success_url = reverse_lazy("mailing:settings_list")
 
 
-
-
 @login_required
 def mailing_send(request, pk):
     mailing_item = get_object_or_404(Mailing, pk=pk)
@@ -205,6 +206,7 @@ def mailing_send(request, pk):
     select_mailings()
 
     return redirect(reverse('mailing:mailing_list'))
+
 
 @login_required
 @permission_required('mailing.can_turn_off_mailing')
@@ -234,28 +236,18 @@ class HomePageView(TemplateView):
         :return:
         """
         context = super().get_context_data(**kwargs)
-        # количество рассылок всего
         context["mailings_count"] = len(Mailing.objects.all())
-        # количество активных рассылок
         context["mailings_count_active"] = len(Mailing.objects.filter(settings__status_changed=True))
 
-        # количество уникальных клиентов для рассылок
         emails_unique = Client.objects.values('email').annotate(total=Count('id'))
         context["emails_unique"] = emails_unique
         context["emails_unique_count"] = len(emails_unique)
-        # # три случайные статьи из блога
-        # article_list_len = len(Article.objects.all())
-        #
-        # # article_list_len_2 = Article.objects.Count()
-        #
-        # context["article_list_len"] = article_list_len
-        #
-        # valid_profiles_id_list = Article.objects.values_list('id', flat=True)
-        # random_profiles_id_list = random.sample(list(valid_profiles_id_list), min(len(valid_profiles_id_list), 3))
-        # # context["random_articles"] = Article.objects.filter(id__in=random_profiles_id_list)
-        # # = get_cached_article_list()
-        # context["random_articles"] = get_cached_article_list().filter(id__in=random_profiles_id_list)
-        #
-        # # def sample(self, population, k, *, counts=None):
+        article_list_len = len(Blog.objects.all())
+
+        context["article_list_len"] = article_list_len
+
+        valid_profiles_id_list = Blog.objects.values_list('id', flat=True)
+        random_profiles_id_list = random.sample(list(valid_profiles_id_list), min(len(valid_profiles_id_list), 3))
+        context["random_articles"] = get_cached_blog_list().filter(id__in=random_profiles_id_list)
 
         return context
