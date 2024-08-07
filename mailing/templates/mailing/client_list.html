@@ -8,8 +8,10 @@
             <h1><b>Клиенты</b></h1>
         </div>
         <div class="button-group">
+            {% if user == object.mailing.user or user.is_superuser %}
             <a class="btn btn-outline-success" href="{% url 'mailing:client_create'%}" role="button">Добавить
                 клиента</a>
+            {% endif %}
             <a class="btn btn-outline-info" href="{% url 'mailing:mailing_list'%}" role="button">Список рассылок</a>
         </div>
     </div>
@@ -47,16 +49,16 @@
 
 
                 <td>
-                    <a class="btn btn-outline-primary" href="{%url 'mailapp:mail_detail' object.pk %}"
+                    <a class="btn btn-outline-primary" href="{%url 'mailing:mail_detail' object.pk %}"
                        role="button">Посмотреть</a>
                 </td>
 
                 <td>
-                    <a class="btn btn-outline-primary" href="{%url 'mailapp:mail_update' object.pk %}"
+                    <a class="btn btn-outline-primary" href="{%url 'mailing:mail_update' object.pk %}"
                        role="button">Изменить</a>
                 </td>
                 <td>
-                    <a class="btn btn-outline-primary" href="{%url 'mailapp:mail_delete' object.pk%}"
+                    <a class="btn btn-outline-primary" href="{%url 'mailing:mail_delete' object.pk%}"
                        role="button">Удалить</a>
                 </td>
                 {% endif %}
@@ -65,7 +67,8 @@
             </tr>
             {% endfor %}
 
-            {% endif %}
+            {% else %}
+
 
             {% for object in object_list %}
 
@@ -82,12 +85,11 @@
                     Нет
                     {% endif %}
                 </td>
-
+                {% if user == object.user or user.is_superuser %}
                 <td>
                     <a class="btn btn-outline-primary" href="{%url 'mailing:client_detail' object.pk %}"
                        role="button">Посмотреть</a>
                 </td>
-
                 <td>
                     <a class="btn btn-outline-primary" href="{%url 'mailing:client_update' object.pk %}"
                        role="button">Изменить</a>
@@ -96,10 +98,20 @@
                     <a class="btn btn-outline-danger" href="{%url 'mailing:client_delete' object.pk%}"
                        role="button">Удалить</a>
                 </td>
-
+                {% else %}
+                <td><a class="btn btn-outline-secondary" disabled>Посмотреть</a>
+                </td>
+                <td><a class="btn btn-outline-secondary" disabled>Изменить</a>
+                </td>
+                <td><a class="btn btn-outline-secondary" disabled>Удалить</a>
+                </td>
+                {%endif%}
 
             </tr>
+
             {% endfor %}
+            {% endif %}
+
 
         </table>
         </p>

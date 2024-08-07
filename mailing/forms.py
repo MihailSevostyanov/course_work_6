@@ -66,3 +66,8 @@ class MailingSettingsForm(StyleFormMixin, ModelForm):
                                        widget=DateInput(
                                            attrs={'class': 'datepicker form-control', 'placeholder': 'Select a date'}),
                                        required=False)
+
+
+class MailingModeratorForm(StyleFormMixin, ModelForm):
+    model = Mailing
+    fields = ('title', 'description', 'message', 'user', 'settings')

@@ -32,6 +32,7 @@
                 <td>{{object.periodicity}}</td>
                 <td>{{object.status_changed}}</td>
                 <td>{{object.active}}</td>
+                {% if user.is_superuser %}
                 <td>
                     <a class="btn btn-outline-primary"
                        href="{% url 'mailing:settings_update' object.pk %}"
@@ -41,6 +42,14 @@
                     <a class="btn btn-outline-danger"
                        href="{%url 'mailing:settings_delete' object.pk%}" role="button">Удалить</a>
                 </td>
+                {% else %}
+                <td>
+                    <a class="btn btn-outline-secondary" disabled>Изменить</a>
+                </td>
+                <td>
+                    <a class="btn btn-outline-secondary" disabled>Удалить</a>
+                </td>
+                {% endif %}
             </tr>
             {%endfor%}
         </table>

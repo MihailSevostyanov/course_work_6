@@ -21,6 +21,16 @@
                         {{ form.as_p }}
                     </div>
                     <div class="modal-footer p-2">
+                        {% if perms.mailing.can_not_edit_mailing and not user.is_superuser%}
+                        <p>Извини, менеджерам запрещено редактировать рассылки =(</p>
+                        <button type="submit" disabled
+                                class="btn btn-outline-success">{% if object %}
+                            Сохранить
+                            {% else %}
+                            Создать
+                            {% endif %}
+                        </button>
+                        {% else %}
                         <button type="submit"
                                 class="btn btn-outline-success">
                             <strong>
@@ -31,6 +41,7 @@
                                 {% endif %}
                             </strong>
                         </button>
+                        {% endif %}
                         <div class="btn-group">
                             <a href="{% url 'mailing:mailing_list' %}" class="btn btn-outline-info">Назад</a>
                         </div>
